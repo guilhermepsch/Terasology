@@ -25,24 +25,25 @@ import org.terasology.engine.world.time.WorldTimeImpl;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Dummy world provider. Generates chunk and world data on demand.
  */
 public class MapWorldProvider implements WorldProviderCore {
 
-    private Map<Vector3ic, Block> blocks = Maps.newHashMap();
-    private Map<Vector3ic, Chunk> chunks = Maps.newHashMap();
-    private WorldGenerator worldGenerator;
-    private BlockManager blockManager;
-    private ExtraBlockDataManager extraDataManager;
-    private EntityBufferImpl entityBuffer;
+    private final Map<Vector3ic, Block> blocks = Maps.newHashMap();
+    private final Map<Vector3ic, Chunk> chunks = Maps.newHashMap();
+    private final WorldGenerator worldGenerator;
+    private final BlockManager blockManager;
+    private final ExtraBlockDataManager extraDataManager;
+    private final EntityBufferImpl entityBuffer;
 
     public MapWorldProvider(WorldGenerator worldGenerator, BlockManager blockManager, ExtraBlockDataManager extraDataManager) {
-        this.worldGenerator = worldGenerator;
-        this.blockManager = blockManager;
-        this.extraDataManager = extraDataManager;
-        entityBuffer = new EntityBufferImpl();
+        this.worldGenerator = Objects.requireNonNull(worldGenerator, "worldGenerator must not be null");
+        this.blockManager = Objects.requireNonNull(blockManager, "blockManager must not be null");
+        this.extraDataManager = Objects.requireNonNull(extraDataManager, "extraDataManager must not be null");
+        this.entityBuffer = new EntityBufferImpl();
     }
 
     @Override
@@ -85,7 +86,6 @@ public class MapWorldProvider implements WorldProviderCore {
             return block;
         }
 
-        // TODO block manager
         Vector3i chunkPos = Chunks.toChunkPos(pos, new Vector3i());
         Chunk chunk = chunks.get(chunkPos);
         if (chunk == null && worldGenerator != null) {
@@ -166,5 +166,17 @@ public class MapWorldProvider implements WorldProviderCore {
     @Override
     public Collection<BlockRegionc> getRelevantRegions() {
         return Collections.emptySet();
+    }
+
+    public Map<Vector3ic, Block> getBlocks() {
+        return Collections.unmodifiableMap(blocks);
+    }
+
+    public Map<Vector3ic, Chunk> getChunks() {
+        return Collections.unmodifiableMap(chunks);
+    }
+
+    public WorldGenerator getWorldGenerator() {
+        return worldGenerator;
     }
 }
