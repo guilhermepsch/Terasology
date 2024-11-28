@@ -37,12 +37,11 @@ class Environment {
     Environment(Name... moduleNames) {
         try {
             reset(Sets.newHashSet(moduleNames));
-        } catch (RuntimeException e) {
-            throw e;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error occurred while resetting environment", e);
         }
     }
+    
 
     protected void reset(Set<Name> moduleNames) throws IOException {
         this.context = new ContextImpl();
