@@ -14,26 +14,40 @@ import org.terasology.reflection.TypeRegistry;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Tag("MteTest")
 public abstract class ModuleEnvironmentTest {
+
     protected ModuleManager moduleManager;
     protected ModuleTypeRegistry typeRegistry;
+
+    // Static initialization block to set up the TypeRegistry once
+    static {
+        initializeTypeRegistry();
+    }
 
     @BeforeEach
     public void before(@TempDir Path tempHome) throws IOException {
         PathManager.getInstance().useOverrideHomePath(tempHome);
 
         moduleManager = ModuleManagerFactory.create();
-        TypeRegistry.WHITELISTED_CLASSES = ExternalApiWhitelist.CLASSES.stream().map(Class::getName).collect(Collectors.toSet());
-        TypeRegistry.WHITELISTED_PACKAGES = ExternalApiWhitelist.PACKAGES;
         typeRegistry = new ModuleTypeRegistry(moduleManager.getEnvironment());
 
         setup();
     }
 
     protected void setup() {
+        // Placeholder for test-specific setup in subclasses
+    }
 
+    private static void initializeTypeRegistry() {
+        // Initialize the static fields in a controlled manner
+        Set<String> whitelistedClasses = ExternalApiWhitelist.CLASSES.stream()
+                .map(Class::getName)
+                .collect(Collectors.toSet());
+        TypeRegistry.setWhitelistedClasses(whitelistedClasses);
+        TypeRegistry.setWhitelistedPackages(ExternalApiWhitelist.PACKAGES);
     }
 }
